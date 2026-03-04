@@ -13,8 +13,19 @@
             box-sizing: border-box; text-align: center;
         }
         .header { font-size: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; font-weight: bold; }
-        h1 { font-size: 110px; margin: 20px 0; } /* El Service # gigante */
+        h1 { font-size: 110px; margin: 15px 0; } /* El Service # gigante */
         .cliente { font-size: 28px; font-weight: bold; text-transform: uppercase; line-height: 1.2; }
+        
+        /* Nuevo estilo para el tipo de envío */
+        .tipo-envio { 
+            font-size: 32px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            margin: 10px 0;
+            border: 2px dashed #000;
+            padding: 5px;
+        }
+
         .footer { background: #000; color: #fff; padding: 15px; font-size: 35px; font-weight: bold; }
         @media print {
             body { background: none; }
@@ -31,6 +42,7 @@
         const service = urlParams.get('s') || '---';
         const cliente = urlParams.get('c') || 'CLIENTE';
         const totalBultos = parseInt(urlParams.get('b')) || 1;
+        const envio = urlParams.get('e') || ''; // Nueva variable para envío
 
         const contenedor = document.getElementById('impresion');
 
@@ -40,6 +52,9 @@
                     <div class="header">SERVICE LG AMOBLAMIENTOS</div>
                     <h1>#${service}</h1>
                     <div class="cliente">${decodeURIComponent(cliente)}</div>
+                    
+                    <div class="tipo-envio">${decodeURIComponent(envio)}</div>
+                    
                     <div class="footer">BULTO ${i} / ${totalBultos}</div>
                 </div>
             `;
