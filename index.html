@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<-- Código optimizado para Rodrigo - LG Amoblamientos -->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
+        .etiqueta { 
+            width: 100mm; height: 140mm; /* Medida estándar para térmica o media A4 */
+            background: white; border: 2px solid #000;
+            margin: 10px auto; padding: 20px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            page-break-after: always; /* Esto separa las etiquetas al imprimir */
+            box-sizing: border-box; text-align: center;
+        }
+        .header { font-size: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; font-weight: bold; }
+        h1 { font-size: 110px; margin: 20px 0; } /* El Service # gigante */
+        .cliente { font-size: 28px; font-weight: bold; text-transform: uppercase; line-height: 1.2; }
+        .footer { background: #000; color: #fff; padding: 15px; font-size: 35px; font-weight: bold; }
+        @media print {
+            body { background: none; }
+            .etiqueta { margin: 0; border: none; } /* Quita márgenes al imprimir */
+        }
+    </style>
+</head>
+<body>
+    <div id="impresion"></div>
+
+    <script>
+        // Captura de datos desde la URL (Link de Airtable)
+        const urlParams = new URLSearchParams(window.location.search);
+        const service = urlParams.get('s') || '---';
+        const cliente = urlParams.get('c') || 'CLIENTE';
+        const totalBultos = parseInt(urlParams.get('b')) || 1;
+
+        const contenedor = document.getElementById('impresion');
+
+        for (let i = 1; i <= totalBultos; i++) {
+            contenedor.innerHTML += `
+                <div class="etiqueta">
+                    <div class="header">SERVICE LG AMOBLAMIENTOS</div>
+                    <h1>#${service}</h1>
+                    <div class="cliente">${decodeURIComponent(cliente)}</div>
+                    <div class="footer">BULTO ${i} / ${totalBultos}</div>
+                </div>
+            `;
+        }
+        // Disparo automático de impresión
+        window.onload = function() {
+            setTimeout(() => { window.print(); }, 500);
+        };
+    </script>
+</body>
+</html>
