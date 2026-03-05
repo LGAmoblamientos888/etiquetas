@@ -41,6 +41,14 @@
         const cliente = urlParams.get('c') || 'CLIENTE';
         const totalBultos = parseInt(urlParams.get('b')) || 1;
         const envio = urlParams.get('e') || '';
+        const recordId = urlParams.get('id'); // Capturamos el ID para Make
+
+        // --- DISPARO AL WEBHOOK DE MAKE ---
+        if (recordId) {
+            fetch('https://hook.us2.make.com/amxste64q9w7h8jlu1mp9ps6fxu08mfo?id=' + recordId, {
+                mode: 'no-cors'
+            });
+        }
 
         const contenedor = document.getElementById('impresion');
 
