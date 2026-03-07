@@ -2,68 +2,57 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Generador de Etiquetas - LG Amoblamientos</title>
+    <title>Etiquetas LG Amoblamientos</title>
     <style>
+        /* Forzamos que todo sea negro puro para la térmica */
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
         body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; color: #000; }
         
         .etiqueta { 
             width: 100mm; height: 140mm; 
-            background: white; border: 2px solid #000;
-            margin: 20px auto; padding: 15px;
+            background: white; border: 3px solid #000;
+            margin: 20px auto; padding: 12px;
             display: flex; flex-direction: column; 
             justify-content: space-between;
             page-break-after: always; 
-            box-sizing: border-box; text-align: center;
+            text-align: center;
+            overflow: hidden; /* Evita que cualquier texto se escape del papel */
         }
 
         .header { 
-            font-size: 18px; 
-            border-bottom: 3px solid #000;
-            padding-bottom: 8px; 
-            font-weight: bold; 
+            font-size: 18px; border-bottom: 3px solid #000;
+            padding-bottom: 5px; font-weight: bold; 
         }
 
         h1 { 
-            font-size: 110px;
-            margin: 10px 0; 
-            flex-grow: 1; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-weight: 900;
+            font-size: 110px; margin: 5px 0; flex-grow: 1; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: 900; line-height: 1;
         }
 
-        .cliente { 
-            font-size: 28px; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            margin: 5px 0; 
-        }
+        .cliente { font-size: 26px; font-weight: bold; text-transform: uppercase; margin: 5px 0; }
 
-        /* Ajuste del tamaño de fuente para el tipo de envío */
+        /* Ajuste solicitado: Más pequeño y contenido dentro del margen */
         .tipo-envio { 
-            font-size: 24px; /* Reducido para evitar que se salga del margen */
-            font-weight: 900; 
-            text-transform: uppercase; 
-            margin: 15px 0;
+            font-size: 20px; /* Tamaño reducido para Buffa 3084 y similares */
+            font-weight: 800; text-transform: uppercase; 
+            margin: 10px 0; padding: 10px;
             border: 4px dashed #000;
-            padding: 12px;
-            word-wrap: break-word; /* Asegura que el texto largo se parta si es necesario */
+            max-width: 100%;
+            overflow-wrap: break-word; /* Si el texto es muy largo, lo parte */
         }
 
+        /* Footer en Negro sobre Blanco para evitar el efecto gris en térmicas */
         .footer { 
-            border-top: 4px solid #000; 
-            background: #fff; 
-            color: #000; 
-            padding: 15px 0; 
-            font-size: 36px; 
+            border-top: 5px solid #000; 
+            padding-top: 10px;
+            font-size: 38px; 
             font-weight: 900; 
         }
 
         @media print {
             body { background: none; }
             .etiqueta { margin: 0; border: 3px solid #000; }
-            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
@@ -78,6 +67,7 @@
         const envio = urlParams.get('e') || '';
         const recordId = urlParams.get('id');
 
+        // SEÑAL A MAKE: Se dispara una sola vez al cargar la página
         if (recordId) {
             fetch('https://hook.us2.make.com/amxste64q9w7h8jlu1mp9ps6fxu08mfo?id=' + recordId, {
                 mode: 'no-cors'
@@ -87,16 +77,18 @@
         const contenedor = document.getElementById('impresion');
 
         for (let i = 1; i <= totalBultos; i++) {
+            // Limpieza de texto para evitar errores de símbolos
+            const clienteDecodificado = decodeURIComponent(cliente).replace(/\+/g, ' ');
+            const envioDecodificado = decodeURIComponent(envio).replace(/\+/g, ' ').replace(/\n/g, '<br>');
+
             let htmlEtiqueta = `
                 <div class="etiqueta">
                     <div class="header">SERVICE LG AMOBLAMIENTOS</div>
                     <h1>#${service}</h1>
-                    <div class="cliente">${decodeURIComponent(cliente)}</div>`;
+                    <div class="cliente">${clienteDecodificado}</div>`;
             
             if (envio) {
-                // Reemplazamos saltos de línea por <br> para formatear la dirección
-                const envioFormateado = decodeURIComponent(envio).replace(/\n/g, '<br>');
-                htmlEtiqueta += `<div class="tipo-envio">${envioFormateado}</div>`;
+                htmlEtiqueta += `<div class="tipo-envio">${envioDecodificado}</div>`;
             }
 
             htmlEtiqueta += `
@@ -107,7 +99,7 @@
         }
 
         window.onload = function() {
-            setTimeout(() => { window.print(); }, 700);
+            setTimeout(() => { window.print(); }, 800);
         };
     </script>
 </body>
