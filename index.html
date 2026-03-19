@@ -25,24 +25,53 @@
         }
 
         h1 { 
-            font-size: 110px; margin: 5px 0; flex-grow: 1; 
+            font-size: 110px; margin: 5px 0 0 0; flex-grow: 1; 
             display: flex; align-items: center; justify-content: center; 
             font-weight: 900; line-height: 1;
         }
 
-        .cliente { font-size: 26px; font-weight: bold; text-transform: uppercase; margin: 5px 0; }
-
-        /* NUEVO: Estilo para SKU y Piezas */
-        .detalles-articulo {
+        /* NUEVO: Contenedor para Factura y SKU debajo del # service */
+        .referencias-top {
             display: flex;
             justify-content: space-between;
-            font-size: 22px;
+            align-items: center;
             font-weight: bold;
+            text-transform: uppercase;
+            padding: 0 5px;
+            margin: -5px 0 5px 0; /* Ajuste para pegarlo al #service */
+        }
+
+        /* NUEVO: Estilo para Factura (más pequeño) */
+        .factura-text {
+            font-size: 14px; /* Tamaño reducido de 26px a 14px */
+            text-align: left;
+        }
+
+        /* NUEVO: Estilo para SKU (más pequeño, igual que factura) */
+        .sku-text {
+            font-size: 14px; /* Tamaño reducido de 16px a 14px */
+            text-align: right;
+        }
+
+        /* Contenedor principal de la línea de Piezas */
+        .detalles-articulo {
+            display: flex;
+            justify-content: center; /* Centrado */
+            align-items: center; 
             border-top: 2px solid #000;
             border-bottom: 2px solid #000;
             padding: 8px 5px;
             margin: 5px 0;
             text-transform: uppercase;
+        }
+
+        /* NUEVO: Piezas con tamaño reducido y centrado */
+        .piezas-text {
+            font-size: 18px; /* Tamaño reducido de 22px a 18px */
+            font-weight: 900;
+            flex-grow: 1; 
+            text-align: center; 
+            overflow-wrap: break-word; /* Si el texto es gigante, se parte en líneas */
         }
 
         .tipo-envio { 
@@ -73,12 +102,12 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const service = urlParams.get('s') || '---';
-        const cliente = urlParams.get('c') || 'CLIENTE';
+        const factura = urlParams.get('c') || 'CLIENTE'; // Usamos 'c' para factura como en tu link
         const totalBultos = parseInt(urlParams.get('b')) || 1;
         const envio = urlParams.get('e') || '';
         const recordId = urlParams.get('id');
         
-        // NUEVO: Capturamos los parámetros de SKU y Piezas
+        // Capturamos los parámetros de SKU y Piezas
         const sku = urlParams.get('sku') || '';
         const piezas = urlParams.get('p') || '';
 
@@ -93,7 +122,7 @@
 
         for (let i = 1; i <= totalBultos; i++) {
             // Limpieza de texto para evitar errores de símbolos
-            const clienteDecodificado = decodeURIComponent(cliente).replace(/\+/g, ' ');
+            const facturaDecodificada = decodeURIComponent(factura).replace(/\+/g, ' ');
             const envioDecodificado = envio ? decodeURIComponent(envio).replace(/\+/g, ' ').replace(/\n/g, '<br>') : '';
             const skuDecodificado = sku ? decodeURIComponent(sku).replace(/\+/g, ' ') : '';
             const piezasDecodificado = piezas ? decodeURIComponent(piezas).replace(/\+/g, ' ') : '';
@@ -101,15 +130,19 @@
             let htmlEtiqueta = `
                 <div class="etiqueta">
                     <div class="header">SERVICE LG AMOBLAMIENTOS</div>
-                    <h1>#${service}</h1>
-                    <div class="cliente">${clienteDecodificado}</div>`;
+                    <h1>#${service}</h1>`;
+
+            // NUEVA FILA: Factura y SKU justo debajo del # service
+            htmlEtiqueta += `<div class="referencias-top">
+                    <span class="factura-text">${facturaDecodificada}</span>
+                    <span class="sku-text">${skuDecodificado}</span>
+                </div>`;
             
-            // NUEVO: Agregamos la fila de SKU y Piezas solo si existe alguno de los dos
-            if (sku || piezas) {
-                htmlEtiqueta += `<div class="detalles-articulo">`;
-                if (sku) htmlEtiqueta += `<span>SKU: ${skuDecodificado}</span>`;
-                if (piezas) htmlEtiqueta += `<span>PZS: ${piezasDecodificado}</span>`;
-                htmlEtiqueta += `</div>`;
+            // Línea de Piezas (sin nombrar Piezas), centrada y más pequeña
+            if (piezas) {
+                htmlEtiqueta += `<div class="detalles-articulo">
+                    <span class="piezas-text">${piezasDecodificado}</span>
+                </div>`;
             }
 
             if (envio) {
