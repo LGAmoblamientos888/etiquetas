@@ -32,17 +32,28 @@
 
         .cliente { font-size: 26px; font-weight: bold; text-transform: uppercase; margin: 5px 0; }
 
-        /* Ajuste solicitado: Más pequeño y contenido dentro del margen */
+        /* NUEVO: Estilo para SKU y Piezas */
+        .detalles-articulo {
+            display: flex;
+            justify-content: space-between;
+            font-size: 22px;
+            font-weight: bold;
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding: 8px 5px;
+            margin: 5px 0;
+            text-transform: uppercase;
+        }
+
         .tipo-envio { 
-            font-size: 20px; /* Tamaño reducido para Buffa 3084 y similares */
+            font-size: 20px; 
             font-weight: 800; text-transform: uppercase; 
             margin: 10px 0; padding: 10px;
             border: 4px dashed #000;
             max-width: 100%;
-            overflow-wrap: break-word; /* Si el texto es muy largo, lo parte */
+            overflow-wrap: break-word; 
         }
 
-        /* Footer en Negro sobre Blanco para evitar el efecto gris en térmicas */
         .footer { 
             border-top: 5px solid #000; 
             padding-top: 10px;
@@ -66,6 +77,10 @@
         const totalBultos = parseInt(urlParams.get('b')) || 1;
         const envio = urlParams.get('e') || '';
         const recordId = urlParams.get('id');
+        
+        // NUEVO: Capturamos los parámetros de SKU y Piezas
+        const sku = urlParams.get('sku') || '';
+        const piezas = urlParams.get('p') || '';
 
         // SEÑAL A MAKE: Se dispara una sola vez al cargar la página
         if (recordId) {
@@ -79,7 +94,9 @@
         for (let i = 1; i <= totalBultos; i++) {
             // Limpieza de texto para evitar errores de símbolos
             const clienteDecodificado = decodeURIComponent(cliente).replace(/\+/g, ' ');
-            const envioDecodificado = decodeURIComponent(envio).replace(/\+/g, ' ').replace(/\n/g, '<br>');
+            const envioDecodificado = envio ? decodeURIComponent(envio).replace(/\+/g, ' ').replace(/\n/g, '<br>') : '';
+            const skuDecodificado = sku ? decodeURIComponent(sku).replace(/\+/g, ' ') : '';
+            const piezasDecodificado = piezas ? decodeURIComponent(piezas).replace(/\+/g, ' ') : '';
 
             let htmlEtiqueta = `
                 <div class="etiqueta">
@@ -87,6 +104,14 @@
                     <h1>#${service}</h1>
                     <div class="cliente">${clienteDecodificado}</div>`;
             
+            // NUEVO: Agregamos la fila de SKU y Piezas solo si existe alguno de los dos
+            if (sku || piezas) {
+                htmlEtiqueta += `<div class="detalles-articulo">`;
+                if (sku) htmlEtiqueta += `<span>SKU: ${skuDecodificado}</span>`;
+                if (piezas) htmlEtiqueta += `<span>PZS: ${piezasDecodificado}</span>`;
+                htmlEtiqueta += `</div>`;
+            }
+
             if (envio) {
                 htmlEtiqueta += `<div class="tipo-envio">${envioDecodificado}</div>`;
             }
